@@ -15,26 +15,17 @@
   become: true
   tags: [install]
 
-- name: Ensure keyrings directory exists
-  ansible.builtin.file:
-    path: /usr/share/keyrings
-    state: directory
-    mode: '0755'
+- name: Add ClickHouse repo key (stable)
+  ansible.builtin.apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 3E4AD4719D9E9A3B
+    state: present
   become: true
   tags: [install]
 
-- name: Download ClickHouse LTS repo key (official)
-  ansible.builtin.get_url:
-    url: https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key
-    dest: /usr/share/keyrings/clickhouse-keyring.gpg
-    mode: '0644'
-    force: true
-  become: true
-  tags: [install]
-
-- name: Add ClickHouse apt repo (LTS)
+- name: Add ClickHouse apt repo (stable)
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ ansible_architecture }}] https://packages.clickhouse.com/deb lts main"
+    repo: "deb https://packages.clickhouse.com/deb stable main"
     state: present
     filename: clickhouse
   become: true
