@@ -23,7 +23,7 @@
   become: true
   tags: [install]
 
-- name: Download and install ClickHouse LTS repo key
+- name: Download ClickHouse LTS repo key (official)
   ansible.builtin.get_url:
     url: https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key
     dest: /usr/share/keyrings/clickhouse-keyring.gpg
@@ -32,14 +32,9 @@
   become: true
   tags: [install]
 
-- name: Get system architecture
-  ansible.builtin.command: dpkg --print-architecture
-  register: arch
-  changed_when: false
-
 - name: Add ClickHouse apt repo (LTS)
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ arch.stdout }}] https://packages.clickhouse.com/deb lts main"
+    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ ansible_architecture }}] https://packages.clickhouse.com/deb lts main"
     state: present
     filename: clickhouse
   become: true
