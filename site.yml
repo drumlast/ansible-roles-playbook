@@ -5,5 +5,5 @@
 
   roles:
     - clickhouse
-    - vector-role
-    - lighthouse-role
+    - vector_role
+    - lighthouse_role
