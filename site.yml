@@ -1,0 +1,9 @@
+---
+- name: Deploy CH + Vector + lighthouse
+  hosts: all
+  become: true
+
+  roles:
+    - clickhouse
+    - vector-role
+    - lighthouse-role
