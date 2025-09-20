@@ -1,5 +1,5 @@
 ---
-# Main installation actions for ClickHouse (Ubuntu 24.04, stable repo)
+# Install ClickHouse on Ubuntu 24.04 using stable repo and LTS key
 
 - name: Install prerequisites
   ansible.builtin.apt:
@@ -11,6 +11,7 @@
     state: present
     update_cache: true
   become: true
+  tags: [install]
 
 - name: Ensure keyrings directory exists
   ansible.builtin.file:
@@ -18,44 +19,48 @@
     state: directory
     mode: '0755'
   become: true
+  tags: [install]
 
-- name: Download ClickHouse repo key from rpm/lts
+- name: Download ClickHouse repo key (from LTS path)
   ansible.builtin.get_url:
     url: https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key
     dest: /usr/share/keyrings/clickhouse-keyring.gpg
     mode: '0644'
     force: true
   become: true
+  tags: [install]
 
-- name: Get system architecture
-  ansible.builtin.command: dpkg --print-architecture
-  register: arch
-  changed_when: false
-
-- name: Add ClickHouse apt repo (stable main, using the rpm/lts key)
+- name: Add ClickHouse apt repo (stable)
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ arch.stdout }}] https://packages.clickhouse.com/deb stable main"
+    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ ansible_architecture }}] https://packages.clickhouse.com/deb stable main"
     state: present
     filename: clickhouse
   become: true
+  tags: [install]
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  tags: [install]
 
 - name: Install ClickHouse packages (fixed version)
   ansible.builtin.apt:
     name: "{{ clickhouse_package | map('regex_replace', '$', '=' + clickhouse_version) | list }}"
     state: present
-    update_cache: true
   become: true
   when: clickhouse_version != 'latest'
+  tags: [install]
 
 - name: Install ClickHouse packages (latest)
   ansible.builtin.apt:
     name: "{{ clickhouse_package }}"
     state: "{{ clickhouse_version }}"
-    update_cache: true
   become: true
   when: clickhouse_version == 'latest'
+  tags: [install]
 
-- name: Hold specified version during APT upgrades
+- name: Hold specified version during APT upgrade | Package installation
   become: true
   copy:
     dest: "/etc/apt/preferences.d/fixed-{{ item }}"
@@ -64,3 +69,4 @@
       Pin: release a=now
       Pin-Priority: 1001
   loop: "{{ clickhouse_package }}"
+  tags: [install]
