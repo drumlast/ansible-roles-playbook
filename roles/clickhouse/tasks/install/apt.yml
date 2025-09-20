@@ -2,10 +2,18 @@
 # Main installation actions
 # https://clickhouse.com/docs/en/getting-started/#installation
 
+- name: Ensure keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+  tags: [install]
+
 - name: Install by APT | Download ClickHouse repo key
   ansible.builtin.get_url:
-    url: "https://packages.clickhouse.com/repo/GPG-KEY-clickhouse"
-    dest: /usr/share/keyrings/clickhouse-key.gpg
+    url: https://packages.clickhouse.com/deb/keyring.gpg
+    dest: /etc/apt/keyrings/clickhouse.gpg
     mode: '0644'
   become: true
   tags: [install]
@@ -20,7 +28,7 @@
 
 - name: Install by APT | Repo installation
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-key.gpg] https://packages.clickhouse.com/deb stable main"
+    repo: "deb [signed-by=/etc/apt/keyrings/clickhouse.gpg] https://packages.clickhouse.com/deb stable main"
     state: present
     filename: clickhouse
   become: true
