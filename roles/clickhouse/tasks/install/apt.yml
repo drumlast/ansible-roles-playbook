@@ -11,7 +11,6 @@
     state: present
     update_cache: true
   become: true
-  tags: [install]
 
 - name: Ensure keyrings directory exists
   ansible.builtin.file:
@@ -19,24 +18,26 @@
     state: directory
     mode: '0755'
   become: true
-  tags: [install]
 
-- name: Download ClickHouse stable repo key
+- name: Download ClickHouse repo key from rpm/lts
   ansible.builtin.get_url:
-    url: https://packages.clickhouse.com/CLICKHOUSE-KEY.GPG
-    dest: /usr/share/keyrings/clickhouse-stable.gpg
+    url: https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key
+    dest: /usr/share/keyrings/clickhouse-keyring.gpg
     mode: '0644'
     force: true
   become: true
-  tags: [install]
 
-- name: Add ClickHouse apt repo (stable)
+- name: Get system architecture
+  ansible.builtin.command: dpkg --print-architecture
+  register: arch
+  changed_when: false
+
+- name: Add ClickHouse apt repo (stable main, using the rpm/lts key)
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-stable.gpg arch={{ ansible_architecture }}] https://packages.clickhouse.com/deb stable main"
+    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ arch.stdout }}] https://packages.clickhouse.com/deb stable main"
     state: present
     filename: clickhouse
   become: true
-  tags: [install]
 
 - name: Install ClickHouse packages (fixed version)
   ansible.builtin.apt:
@@ -45,7 +46,6 @@
     update_cache: true
   become: true
   when: clickhouse_version != 'latest'
-  tags: [install]
 
 - name: Install ClickHouse packages (latest)
   ansible.builtin.apt:
@@ -54,9 +54,8 @@
     update_cache: true
   become: true
   when: clickhouse_version == 'latest'
-  tags: [install]
 
-- name: Hold specified version during APT upgrade | Package installation
+- name: Hold specified version during APT upgrades
   become: true
   copy:
     dest: "/etc/apt/preferences.d/fixed-{{ item }}"
