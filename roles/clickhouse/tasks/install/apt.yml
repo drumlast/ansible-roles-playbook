@@ -1,16 +1,17 @@
 ---
-#Main installation actions
-#https://clickhouse.com/docs/en/getting-started/#installation
+# Main installation actions
+# https://clickhouse.com/docs/en/getting-started/#installation
 
-- name: Install by APT | Apt-key add repo key
-  apt_key:
-    keyserver: "{{ clickhouse_repo_keyserver }}"
-    id: "{{ clickhouse_repo_key }}"
+- name: Install by APT | Download ClickHouse repo key
+  ansible.builtin.get_url:
+    url: "https://packages.clickhouse.com/CLICKHOUSE-KEY.GPG"
+    dest: /usr/share/keyrings/clickhouse-key.gpg
+    mode: '0644'
   become: true
   tags: [install]
 
 - name: Install by APT | Remove old repo
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ clickhouse_repo_old }}"
     state: absent
   become: true
@@ -18,14 +19,15 @@
   tags: [install]
 
 - name: Install by APT | Repo installation
-  apt_repository:
-    repo: "{{ clickhouse_repo }}"
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-key.gpg] https://packages.clickhouse.com/deb stable main"
     state: present
+    filename: clickhouse
   become: true
   tags: [install]
 
-- name: Install by APT | Package installation
-  apt:
+- name: Install by APT | Package installation (fixed version)
+  ansible.builtin.apt:
     name: "{{ clickhouse_package | map('regex_replace', '$', '=' + clickhouse_version) | list }}"
     state: present
     update_cache: true
@@ -33,8 +35,8 @@
   when: clickhouse_version != 'latest'
   tags: [install]
 
-- name: Install by APT | Package installation
-  apt:
+- name: Install by APT | Package installation (latest)
+  ansible.builtin.apt:
     name: "{{ clickhouse_package }}"
     state: "{{ clickhouse_version }}"
     update_cache: true
