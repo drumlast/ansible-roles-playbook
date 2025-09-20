@@ -1,40 +1,50 @@
 ---
 # Main installation actions
-# https://clickhouse.com/docs/en/getting-started/#installation
+# Based on official ClickHouse docs for Debian/Ubuntu:
+# https://clickhouse.com/docs/en/install#installation-on-debianubuntu
+
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+  become: true
+  tags: [install]
 
 - name: Ensure keyrings directory exists
   ansible.builtin.file:
-    path: /etc/apt/keyrings
+    path: /usr/share/keyrings
     state: directory
     mode: '0755'
   become: true
   tags: [install]
 
-- name: Install by APT | Download ClickHouse repo key (LTS)
+- name: Download and install ClickHouse repo key
   ansible.builtin.get_url:
-    url: https://packages.clickhouse.com/deb/lts/Release.gpg
-    dest: /etc/apt/keyrings/clickhouse.gpg
+    url: https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key
+    dest: /usr/share/keyrings/clickhouse-keyring.gpg
     mode: '0644'
   become: true
   tags: [install]
 
-- name: Install by APT | Remove old repo
-  ansible.builtin.apt_repository:
-    repo: "{{ clickhouse_repo_old }}"
-    state: absent
-  become: true
-  when: clickhouse_repo_old is defined
-  tags: [install]
+- name: Get system architecture
+  ansible.builtin.command: dpkg --print-architecture
+  register: arch
+  changed_when: false
 
-- name: Install by APT | Repo installation (LTS)
+- name: Add ClickHouse apt repo
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/clickhouse.gpg] https://packages.clickhouse.com/deb lts main"
+    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ arch.stdout }}] https://packages.clickhouse.com/deb stable main"
     state: present
     filename: clickhouse
   become: true
   tags: [install]
 
-- name: Install by APT | Package installation (fixed version)
+- name: Install ClickHouse packages (fixed version)
   ansible.builtin.apt:
     name: "{{ clickhouse_package | map('regex_replace', '$', '=' + clickhouse_version) | list }}"
     state: present
@@ -43,7 +53,7 @@
   when: clickhouse_version != 'latest'
   tags: [install]
 
-- name: Install by APT | Package installation (latest)
+- name: Install ClickHouse packages (latest)
   ansible.builtin.apt:
     name: "{{ clickhouse_package }}"
     state: "{{ clickhouse_version }}"
