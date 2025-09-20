@@ -1,0 +1,11 @@
+# Vector → ClickHouse
+vector_clickhouse_host: 192.168.245.10
+vector_clickhouse_http_port: 8123
+vector_clickhouse_database: logs
+vector_clickhouse_table: nginx_logs
+
+# Lighthouse → ClickHouse
+lighthouse_clickhouse_host: 192.168.245.10
+lighthouse_clickhouse_http_port: 8123
+lighthouse_listen_port: 8080
+lighthouse_server_name: "_"
