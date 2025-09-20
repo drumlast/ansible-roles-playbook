@@ -4,7 +4,7 @@
 
 - name: Install by APT | Download ClickHouse repo key
   ansible.builtin.get_url:
-    url: "https://packages.clickhouse.com/CLICKHOUSE-KEY.GPG"
+    url: "https://packages.clickhouse.com/repo/GPG-KEY-clickhouse"
     dest: /usr/share/keyrings/clickhouse-key.gpg
     mode: '0644'
   become: true
