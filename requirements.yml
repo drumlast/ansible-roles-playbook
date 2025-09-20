@@ -7,9 +7,9 @@
   - src: git@github.com:drumlast/vector-role.git
     scm: git
     version: "v1.0.0"
-    name: vector-role
+    name: vector_role
 
   - src: git@github.com:drumlast/lighthouse-role.git
     scm: git
     version: "v1.0.0"
-    name: lighthouse-role
+    name: lighthouse_role
