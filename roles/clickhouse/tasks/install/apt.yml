@@ -1,5 +1,5 @@
 ---
-# Install ClickHouse on Ubuntu 24.04 using stable repo and LTS key
+# Install ClickHouse on Ubuntu 24.04 using stable repo (без GPG проверки)
 
 - name: Install prerequisites
   ansible.builtin.apt:
@@ -13,26 +13,9 @@
   become: true
   tags: [install]
 
-- name: Ensure keyrings directory exists
-  ansible.builtin.file:
-    path: /usr/share/keyrings
-    state: directory
-    mode: '0755'
-  become: true
-  tags: [install]
-
-- name: Download ClickHouse repo key (from LTS path)
-  ansible.builtin.get_url:
-    url: https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key
-    dest: /usr/share/keyrings/clickhouse-keyring.gpg
-    mode: '0644'
-    force: true
-  become: true
-  tags: [install]
-
-- name: Add ClickHouse apt repo (stable)
+- name: Add ClickHouse apt repo (без проверки подписи)
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch={{ ansible_architecture }}] https://packages.clickhouse.com/deb stable main"
+    repo: "deb [trusted=yes] https://packages.clickhouse.com/deb stable main"
     state: present
     filename: clickhouse
   become: true
@@ -55,7 +38,7 @@
 - name: Install ClickHouse packages (latest)
   ansible.builtin.apt:
     name: "{{ clickhouse_package }}"
-    state: "{{ clickhouse_version }}"
+    state: latest
   become: true
   when: clickhouse_version == 'latest'
   tags: [install]
