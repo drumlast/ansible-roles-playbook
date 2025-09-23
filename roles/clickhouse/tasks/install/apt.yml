@@ -1,5 +1,5 @@
 ---
-# Install ClickHouse on Ubuntu 24.04 using stable repo (без GPG проверки)
+# Install ClickHouse on Ubuntu 24.04 (без GPG проверки, через trusted=yes)
 
 - name: Install prerequisites
   ansible.builtin.apt:
@@ -13,11 +13,14 @@
   become: true
   tags: [install]
 
-- name: Add ClickHouse apt repo (без проверки подписи)
-  ansible.builtin.apt_repository:
-    repo: "deb [trusted=yes] https://packages.clickhouse.com/deb stable main"
-    state: present
-    filename: clickhouse
+- name: Add ClickHouse apt repo (trusted=yes)
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/clickhouse.list
+    content: |
+      deb [trusted=yes] https://packages.clickhouse.com/deb stable main
+  mode: '0644'
+  owner: root
+  group: root
   become: true
   tags: [install]
 
@@ -41,15 +44,4 @@
     state: latest
   become: true
   when: clickhouse_version == 'latest'
-  tags: [install]
-
-- name: Hold specified version during APT upgrade | Package installation
-  become: true
-  copy:
-    dest: "/etc/apt/preferences.d/fixed-{{ item }}"
-    content: |
-      Package: {{ item }}
-      Pin: release a=now
-      Pin-Priority: 1001
-  loop: "{{ clickhouse_package }}"
   tags: [install]
