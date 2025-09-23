@@ -18,9 +18,9 @@
     dest: /etc/apt/sources.list.d/clickhouse.list
     content: |
       deb [trusted=yes] https://packages.clickhouse.com/deb stable main
-  mode: '0644'
-  owner: root
-  group: root
+    owner: root
+    group: root
+    mode: '0644'
   become: true
   tags: [install]
 
