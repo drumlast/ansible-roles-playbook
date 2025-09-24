@@ -6,7 +6,7 @@
 
   - src: git@github.com:drumlast/vector-role.git
     scm: git
-    version: "v1.0.0"
+    version: "v1.0.1"
     name: vector_role
 
   - src: git@github.com:drumlast/lighthouse-role.git
