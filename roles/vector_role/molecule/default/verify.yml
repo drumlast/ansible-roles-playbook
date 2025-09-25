@@ -1,10 +1,24 @@
 ---
-# Purpose: assert that the instance really ended up in the expected state.
-# Molecule calls this playbook with `molecule verify`.
 - name: Verify
-  hosts: instance
-  gather_facts: false # Quicker, if you do not need facts
+  hosts: all
+  gather_facts: false
   tasks:
-    - name: Assert something
+    - name: Check that vector service is running
+      ansible.builtin.service_facts:
+
+    - name: Assert vector service is enabled
       ansible.builtin.assert:
-        that: true
+        that:
+          - "'vector' in ansible_facts.services"
+          - "ansible_facts.services['vector'].state == 'running'"
+
+    - name: Check vector config exists
+      ansible.builtin.stat:
+        path: /etc/vector/vector.toml
+      register: vector_config
+
+    - name: Assert vector config is valid
+      ansible.builtin.assert:
+        that:
+          - vector_config.stat.exists
+          - vector_config.stat.size > 0
