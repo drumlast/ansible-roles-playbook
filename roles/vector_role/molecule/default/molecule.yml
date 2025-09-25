@@ -1,15 +1,12 @@
 ---
-dependency:
-  name: galaxy
-
 driver:
   name: docker
 
 platforms:
-  - name: ubuntu-latest
+  - name: instance-ubuntu
     image: ubuntu:latest
     pre_build_image: true
-  - name: oraclelinux-8
+  - name: instance-oraclelinux
     image: oraclelinux:8
     pre_build_image: true
 
@@ -20,5 +17,3 @@ provisioner:
 
 verifier:
   name: ansible
-  playbooks:
-    - verify.yml
