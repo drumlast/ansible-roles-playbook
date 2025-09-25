@@ -1,6 +1,7 @@
 ---
 galaxy_info:
-  role_name: vector_role
+  namespace: drumlast           
+  role_name: vector_role        
   author: Anatoly Ivanov
   description: Install and configure Vector for log shipping to ClickHouse.
   license: MIT
@@ -11,6 +12,7 @@ galaxy_info:
       versions:
         - focal
         - jammy
+        - noble            # 24.04 LTS, вместо "latest"
     - name: OracleLinux
       versions:
         - "8.0"
