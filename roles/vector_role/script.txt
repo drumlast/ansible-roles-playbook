@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "=== Проверяю роли Ansible в системе ==="
+
+# 1. Где ansible ищет роли
+echo "[ ansible-config dump | grep ROLE ]"
+ansible-config dump | grep ROLE
+
+# 2. Все роли vector*
+echo -e "\n[ find роли vector* ]"
+find ~/.ansible/roles /usr/share/ansible/roles /etc/ansible/roles ./roles -maxdepth 2 -type d -name "vector*" 2>/dev/null
+
+# 3. Ищем timber.io в файлах ролей
+echo -e "\n[ grep timber.io в ролях ]"
+grep -R "timber.io" ~/.ansible/roles /usr/share/ansible/roles /etc/ansible/roles ./roles 2>/dev/null || echo "Не найдено timber.io"
+
+echo -e "\n=== Проверка завершена ==="

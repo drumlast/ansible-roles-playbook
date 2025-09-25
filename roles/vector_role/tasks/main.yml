@@ -1,0 +1,37 @@
+---
+# tasks file for vector-role
+
+- name: Ensure prerequisites are installed
+  ansible.builtin.apt:
+    name:
+      - curl
+      - apt-transport-https
+      - ca-certificates
+    state: present
+    update_cache: true
+  become: true
+  tags: [install]
+
+- name: Run Vector setup script (adds repo automatically)
+  ansible.builtin.shell: |
+    curl -L https://setup.vector.dev | bash
+  #args:
+  #  warn: false
+  become: true
+  tags: [install]
+
+- name: Install Vector package
+  ansible.builtin.apt:
+    name: vector
+    state: present
+    update_cache: true
+  become: true
+  tags: [install]
+
+- name: Ensure Vector service is enabled and started
+  ansible.builtin.service:
+    name: vector
+    enabled: true
+    state: started
+  become: true
+  tags: [install]

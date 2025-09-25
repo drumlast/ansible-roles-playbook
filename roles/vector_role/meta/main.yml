@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: vector_role
+  author: Anatoly Ivanov
+  description: Install and configure Vector for log shipping to ClickHouse.
+  license: MIT
+  min_ansible_version: "2.12"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+
+dependencies: []

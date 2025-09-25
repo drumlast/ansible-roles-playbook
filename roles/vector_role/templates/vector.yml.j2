@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+sources:
+  nginx_logs:
+    type: file
+    include:
+      - /var/log/nginx/access.log
+      - /var/log/nginx/access*.log
+
+sinks:
+  ch_out:
+    type: clickhouse
+    inputs: [nginx_logs]
+    endpoint: "http://{{ vector_clickhouse_host }}:{{ vector_clickhouse_http_port }}"
+    database: "{{ vector_clickhouse_database }}"
+    table: "{{ vector_clickhouse_table }}"
+    compression: false
+    skip_unknown_fields: true

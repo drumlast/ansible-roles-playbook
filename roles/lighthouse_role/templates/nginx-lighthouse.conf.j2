@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+server {
+    listen {{ lighthouse_listen_port }};
+    server_name {{ lighthouse_server_name }};
+
+    root {{ lighthouse_base_dir }};
+    index index.html;
+
+    access_log /var/log/nginx/lighthouse_access.log;
+    error_log  /var/log/nginx/lighthouse_error.log;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://{{ lighthouse_clickhouse_host }}:{{ lighthouse_clickhouse_http_port }}/;
+        proxy_set_header X-ClickHouse-User $http_x_clickhouse_user;
+        proxy_set_header X-ClickHouse-Key  $http_x_clickhouse_key;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+}

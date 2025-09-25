@@ -1,0 +1,55 @@
+---
+- name: Install dependencies
+  ansible.builtin.apt:
+    name: "{{ lighthouse_packages }}"
+    state: present
+    update_cache: true
+
+- name: Ensure base dir exists
+  ansible.builtin.file:
+    path: "{{ lighthouse_base_dir }}"
+    state: directory
+    owner: "{{ ansible_user | default('www-data') }}"
+    group: "{{ ansible_user | default('www-data') }}"
+    mode: "0755"
+
+- name: Mark lighthouse directory as safe for git
+  ansible.builtin.command: >
+    git config --global --add safe.directory {{ lighthouse_base_dir }}
+
+- name: Checkout Lighthouse repo
+  ansible.builtin.git:
+    repo: "{{ lighthouse_git_repo }}"
+    dest: "{{ lighthouse_base_dir }}"
+    version: "master"
+    force: true
+    update: yes
+  notify: reload nginx
+
+- name: Deploy nginx site config
+  ansible.builtin.template:
+    src: "nginx-lighthouse.conf.j2"
+    dest: "{{ lighthouse_nginx_site_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload nginx
+
+- name: Enable nginx site
+  ansible.builtin.file:
+    src: "{{ lighthouse_nginx_site_path }}"
+    dest: "{{ lighthouse_nginx_site_link }}"
+    state: link
+  notify: reload nginx
+
+- name: Disable default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+
+- name: Ensure nginx started and enabled
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

@@ -1,0 +1,3 @@
+lighthouse_packages:
+  - git
+  - nginx

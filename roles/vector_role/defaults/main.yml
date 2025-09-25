@@ -1,0 +1,11 @@
+vector_version: ""                 
+vector_repo_distribution: "ubuntu"
+vector_repo_codename: "noble"      
+vector_clickhouse_host: "192.168.245.10"
+vector_clickhouse_http_port: 8123
+vector_clickhouse_database: "logs"
+vector_clickhouse_table: "nginx_logs"
+vector_config_path: "/etc/vector/vector.yml"
+vector_service_name: "vector"
+vector_user: "vector"
+vector_group: "vector"

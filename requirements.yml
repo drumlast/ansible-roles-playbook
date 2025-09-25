@@ -4,12 +4,12 @@
     version: "1.13"
     name: clickhouse 
 
-  - src: git@github.com:drumlast/vector-role.git
+  - src: git@github.com:YOUR_GITHUB/vector-role.git
     scm: git
     version: "v1.0.0"
-    name: vector_role
+    name: vector-role
 
-  - src: git@github.com:drumlast/lighthouse-role.git
+  - src: git@github.com:YOUR_GITHUB/lighthouse-role.git
     scm: git
     version: "v1.0.0"
-    name: lighthouse_role
+    name: lighthouse-role
