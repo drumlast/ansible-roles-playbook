@@ -1,19 +1,25 @@
 ---
+dependency:
+  name: galaxy
+
 driver:
   name: docker
 
 platforms:
-  - name: instance-ubuntu
+  - name: ubuntu-latest
     image: ubuntu:latest
+    privileged: true
     pre_build_image: true
-  - name: instance-oraclelinux
+  - name: oraclelinux-8
     image: oraclelinux:8
+    privileged: true
     pre_build_image: true
 
 provisioner:
   name: ansible
-  playbooks:
-    converge: converge.yml
+  lint: |
+    yamllint .
+    ansible-lint .
 
 verifier:
   name: ansible

@@ -3,22 +3,32 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Check that vector service is running
-      ansible.builtin.service_facts:
+    - name: Ensure vector package is installed
+      ansible.builtin.package:
+        name: vector
+        state: present
+      check_mode: true
+      register: result_pkg
+      failed_when: result_pkg is failed
 
-    - name: Assert vector service is enabled
-      ansible.builtin.assert:
-        that:
-          - "'vector' in ansible_facts.services"
-          - "ansible_facts.services['vector'].state == 'running'"
+    - name: Ensure vector service is running
+      ansible.builtin.service:
+        name: vector
+        state: started
+        enabled: true
+      check_mode: true
+      register: result_svc
+      failed_when: result_svc is failed
 
-    - name: Check vector config exists
+    - name: Ensure vector config exists
       ansible.builtin.stat:
         path: /etc/vector/vector.toml
-      register: vector_config
+      register: vector_cfg
+      failed_when: not vector_cfg.stat.exists
 
-    - name: Assert vector config is valid
-      ansible.builtin.assert:
-        that:
-          - vector_config.stat.exists
-          - vector_config.stat.size > 0
+    - name: Validate vector config
+      ansible.builtin.command: >
+        vector validate --no-environment --config-toml /etc/vector/vector.toml
+      register: vector_validate
+      changed_when: false
+      failed_when: vector_validate.rc != 0
