@@ -22,9 +22,6 @@ provisioner:
       remote_tmp: /tmp/.ansible/tmp
       host_key_checking: false
       retry_files_enabled: false
-  lint: |
-    yamllint .
-    ansible-lint .
   playbooks:
     converge: converge.yml
 
