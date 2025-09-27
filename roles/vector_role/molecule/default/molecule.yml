@@ -26,10 +26,7 @@ provisioner:
   name: ansible
   config_options:
     defaults:
-      host_key_checking: False
-      retry_files_enabled: False
-  playbooks:
-    converge: converge.yml
+      remote_tmp: /tmp/.ansible/tmp
 
 verifier:
   name: ansible
