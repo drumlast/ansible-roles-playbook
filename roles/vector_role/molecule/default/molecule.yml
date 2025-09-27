@@ -17,22 +17,8 @@ platforms:
 
 provisioner:
   name: ansible
-  config_options:
-    defaults:
-      # фикс ошибки "Failed to create temporary directory"
-      remote_tmp: /tmp/.ansible/tmp
-      host_key_checking: false
-  inventory:
-    host_vars: {}
-    group_vars: {}
   playbooks:
     converge: converge.yml
-  lint: |
-    yamllint .
-    ansible-lint .
 
 verifier:
   name: ansible
-  lint: |
-    yamllint .
-    ansible-lint .
