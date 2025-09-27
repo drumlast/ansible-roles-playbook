@@ -6,20 +6,10 @@
       ansible.builtin.command: which vector
       register: vector_bin
       changed_when: false
-
-    - name: Assert vector binary is installed
-      ansible.builtin.assert:
-        that:
-          - vector_bin.rc == 0
+      failed_when: vector_bin.rc != 0
 
     - name: Check vector service is running
-      ansible.builtin.systemd:
-        name: vector
-        state: started
+      ansible.builtin.shell: systemctl is-active vector
       register: vector_service
       changed_when: false
-
-    - name: Assert vector service is active
-      ansible.builtin.assert:
-        that:
-          - vector_service.status.ActiveState == "active"
+      failed_when: vector_service.stdout.strip() != "active"
