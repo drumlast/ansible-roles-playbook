@@ -10,14 +10,15 @@ platforms:
     image: ubuntu:latest
     privileged: true
     pre_build_image: true
+    command: /sbin/init
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /tmp:/tmp
-
   - name: oraclelinux-8
     image: oraclelinux:8
     privileged: true
     pre_build_image: true
+    command: /sbin/init
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /tmp:/tmp
