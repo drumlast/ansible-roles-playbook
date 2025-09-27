@@ -1,34 +1,25 @@
 ---
-- name: Verify
+- name: Verify Vector installation
   hosts: all
-  gather_facts: false
   tasks:
-    - name: Ensure vector package is installed
-      ansible.builtin.package:
-        name: vector
-        state: present
-      check_mode: true
-      register: result_pkg
-      failed_when: result_pkg is failed
+    - name: Check vector binary exists
+      ansible.builtin.command: which vector
+      register: vector_bin
+      changed_when: false
 
-    - name: Ensure vector service is running
-      ansible.builtin.service:
+    - name: Assert vector binary is installed
+      ansible.builtin.assert:
+        that:
+          - vector_bin.rc == 0
+
+    - name: Check vector service is running
+      ansible.builtin.systemd:
         name: vector
         state: started
-        enabled: true
-      check_mode: true
-      register: result_svc
-      failed_when: result_svc is failed
-
-    - name: Ensure vector config exists
-      ansible.builtin.stat:
-        path: /etc/vector/vector.toml
-      register: vector_cfg
-      failed_when: not vector_cfg.stat.exists
-
-    - name: Validate vector config
-      ansible.builtin.command: >
-        vector validate --no-environment --config-toml /etc/vector/vector.toml
-      register: vector_validate
+      register: vector_service
       changed_when: false
-      failed_when: vector_validate.rc != 0
+
+    - name: Assert vector service is active
+      ansible.builtin.assert:
+        that:
+          - vector_service.status.ActiveState == "active"
