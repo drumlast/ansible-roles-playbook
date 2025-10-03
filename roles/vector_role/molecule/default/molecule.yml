@@ -7,11 +7,11 @@ driver:
 
 platforms:
   - name: vector-ubuntu
-    image: docker.io/library/ubuntu:22.04
+    image: docker.io/library/ubuntu:latest
     pre_build_image: true
-    command: sleep infinity      # держит контейнер «живым»
+    command: sleep infinity
     tty: true
-    privileged: true             # можно убрать, если не нужен
+    privileged: true
 
   - name: vector-oracle
     image: docker.io/library/oraclelinux:8
@@ -27,17 +27,6 @@ provisioner:
   config_options:
     defaults:
       remote_tmp: /tmp/.ansible/tmp
-  env:
-    ANSIBLE_REMOTE_TMP: /tmp/.ansible/tmp
 
 verifier:
   name: ansible
-
-scenario:
-  name: default
-  test_sequence:
-    - destroy
-    - create
-    - converge
-    - verify
-    - destroy
