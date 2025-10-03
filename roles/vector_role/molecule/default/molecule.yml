@@ -7,16 +7,22 @@ driver:
 
 platforms:
   - name: vector-ubuntu
-    image: ubuntu:latest
+    image: docker.io/library/ubuntu:latest
     command: /sbin/init
     privileged: true
     pre_build_image: true
+    tty: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
   - name: vector-oracle
-    image: oraclelinux:8
+    image: docker.io/library/oraclelinux:8
     command: /sbin/init
     privileged: true
     pre_build_image: true
+    tty: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
 provisioner:
   name: ansible
