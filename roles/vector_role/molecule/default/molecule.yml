@@ -6,27 +6,13 @@ driver:
   name: docker
 
 platforms:
-  - name: vector-ubuntu
-    image: docker.io/library/ubuntu:latest
-    pre_build_image: true
+  - name: test-ubuntu
+    image: ubuntu:latest
     command: sleep infinity
-    tty: true
-    privileged: true
-
-  - name: vector-oracle
-    image: docker.io/library/oraclelinux:8
-    pre_build_image: true
-    command: sleep infinity
-    tty: true
     privileged: true
 
 provisioner:
   name: ansible
-  playbooks:
-    converge: converge.yml
-  config_options:
-    defaults:
-      remote_tmp: /tmp/.ansible/tmp
 
 verifier:
   name: ansible
