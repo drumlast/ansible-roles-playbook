@@ -13,10 +13,9 @@
   tags: [install]
 
 - name: Run Vector setup script (adds repo automatically)
-  ansible.builtin.shell: |
-    curl -L https://setup.vector.dev | bash
-  #args:
-  #  warn: false
+  ansible.builtin.shell: curl -L https://setup.vector.dev | bash
+  args:
+    warn: false
   become: true
   tags: [install]
 
