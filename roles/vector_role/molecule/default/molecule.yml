@@ -6,10 +6,21 @@ driver:
   name: docker
 
 platforms:
-  - name: test-ubuntu
+  - name: vector-ubuntu
     image: ubuntu:latest
-    command: sleep infinity
+    command: /sbin/init
     privileged: true
+    tty: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+
+  - name: vector-oracle
+    image: oraclelinux:8
+    command: /sbin/init
+    privileged: true
+    tty: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
 provisioner:
   name: ansible
